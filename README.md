@@ -6,7 +6,7 @@
 
 ### About Me
 
-- 🎓 2nd year student at DA-IICT, Gandhinagar
+- 🎓 Junior year student at DA-IICT, Gandhinagar
 - 🔭 Currently building **[AICalc](https://github.com/AK01177/AICalc)** — an AI-powered visual calculator using Gemini 2.5 Flash
 - 💡 Interested in **Full Stack Development**, **System Design**, and **Machine Learning**
 - 💻 I use **C++** for competitive programming and **TypeScript + Python** for projects
