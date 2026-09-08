@@ -43,6 +43,10 @@
 
 ### Featured Project
 
+#### 🧮 [Argus](https://github.com/AK01177/Argus)
+
+→ **[Live Demo]()** · **[Repo](https://github.com/AK01177/Argus)**
+
 #### 🧮 [AICalc — AI-Powered Visual Calculator](https://github.com/AK01177/AICalc)
 
 A multi-platform web app that lets users draw math, physics, and chemistry problems on a canvas and get AI-solved results rendered in LaTeX. Powered by **Gemini 2.5 Flash**, built with **React + TypeScript + FastAPI**.
