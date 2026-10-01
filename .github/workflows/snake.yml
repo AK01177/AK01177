@@ -1,4 +1,4 @@
-name: Update the Realm
+name: Update stats
 
 on:
   schedule:
@@ -8,7 +8,7 @@ on:
     branches: [main]
     paths:
       - "scripts/**"
-      - ".github/workflows/update-realm.yml"
+      - ".github/workflows/update-stats.yml"
 
 permissions:
   contents: write
@@ -30,7 +30,7 @@ jobs:
 
       - run: pip install fonttools
 
-      - name: Compile the ledger
+      - name: Refresh stats
         run: python scripts/update_stats.py
         env:
           GH_USER: ${{ github.repository_owner }}
@@ -38,9 +38,9 @@ jobs:
           # as a repository secret named STATS_TOKEN to count private work too.
           GH_TOKEN: ${{ secrets.STATS_TOKEN || secrets.GITHUB_TOKEN }}
 
-      - name: Commit the new scrolls
+      - name: Commit updated SVGs
         run: |
-          git config user.name  "realm-scribe[bot]"
+          git config user.name  "stats-bot"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add assets/stats.svg assets/langs.svg assets/heatmap.svg
-          git diff --staged --quiet || (git commit -m "chore: update the ledger of the realm" && git push)
+          git add assets/ledger-stats.svg assets/ledger-langs.svg assets/ledger-activity.svg
+          git diff --staged --quiet || (git commit -m "chore: update stats" && git push)
