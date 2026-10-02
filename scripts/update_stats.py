@@ -19,9 +19,6 @@ PROFILE_Q = """
 query($login:String!){ user(login:$login){
   createdAt
   pullRequests{ totalCount }
-  recent: repositories(ownerAffiliations:OWNER, privacy:PUBLIC, isFork:false, first:8, orderBy:{field:PUSHED_AT, direction:DESC}){
-    nodes{ name pushedAt stargazerCount primaryLanguage{ name } }
-  }
   repositories(ownerAffiliations:OWNER, privacy:PUBLIC, isFork:false, first:100){
     totalCount
     nodes{ stargazerCount languages(first:12, orderBy:{field:SIZE, direction:DESC}){ edges{ size node{ name } } } }
@@ -128,16 +125,7 @@ def compute(raw):
     tot = sum(size.values()) or 1
     langs = sorted(((n, 100 * v / tot) for n, v in size.items()), key=lambda t: -t[1])
 
-    login = os.environ.get("GH_USER", "AK01177").lower()
-    recent = []
-    for r in prof["recent"]["nodes"]:
-        if r["name"].lower() == login:
-            continue
-        pushed = dt.datetime.fromisoformat(r["pushedAt"].replace("Z", "+00:00"))
-        recent.append({"name": r["name"], "lang": (r["primaryLanguage"] or {}).get("name", ""),
-                       "pushed": f"{pushed.strftime('%b').upper()} {pushed.day}, {pushed.year}", "stars": r["stargazerCount"]})
     return {
-        "recent": recent,
         "total": sum(days.values()), "since_label": f"SINCE {raw['created'].strftime('%b %Y').upper()}",
         "cur": cur, "cur_range": ranges(cs, ce), "longest": lg, "longest_range": lr,
         "commits": raw["commits"], "prs": prof["pullRequests"]["totalCount"],
@@ -149,7 +137,7 @@ def compute(raw):
 
 def write_all(data, out):
     os.makedirs(out, exist_ok=True)
-    for name, fn in (("ledger-stats.svg", dyn.stats), ("ledger-langs.svg", dyn.langs), ("ledger-activity.svg", dyn.heatmap), ("ledger-recent.svg", dyn.recent)):
+    for name, fn in (("ledger-stats.svg", dyn.stats), ("ledger-langs.svg", dyn.langs), ("ledger-activity.svg", dyn.heatmap)):
         with open(os.path.join(out, name), "w", encoding="utf-8") as f:
             f.write(fn(data))
         print("wrote", name)
@@ -163,11 +151,6 @@ def demo():
     for i in range(7):
         days[(today - dt.timedelta(days=i)).isoformat()] = 3 + i
     prof = {"createdAt": "2024-12-19T00:00:00Z", "pullRequests": {"totalCount": 14},
-            "recent": {"nodes": [
-                {"name": "Argus", "pushedAt": "2026-09-28T10:00:00Z", "stargazerCount": 0, "primaryLanguage": {"name": "TypeScript"}},
-                {"name": "GodiGlobe", "pushedAt": "2026-09-20T10:00:00Z", "stargazerCount": 0, "primaryLanguage": {"name": "JavaScript"}},
-                {"name": "AICalc", "pushedAt": "2026-09-02T10:00:00Z", "stargazerCount": 4, "primaryLanguage": {"name": "TypeScript"}},
-                {"name": "contactbackend", "pushedAt": "2026-08-14T10:00:00Z", "stargazerCount": 0, "primaryLanguage": {"name": "JavaScript"}}]},
             "repositories": {"totalCount": 18, "nodes": [
                 {"stargazerCount": 4, "languages": {"edges": [{"size": 52000, "node": {"name": "TypeScript"}}, {"size": 31000, "node": {"name": "Python"}}, {"size": 9000, "node": {"name": "CSS"}}]}},
                 {"stargazerCount": 2, "languages": {"edges": [{"size": 24000, "node": {"name": "C++"}}, {"size": 6000, "node": {"name": "JavaScript"}}, {"size": 3000, "node": {"name": "HTML"}}]}}]}}
